@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# 配置文件（包含 API token）
+config.local.py
+.env
+.env.local
+
+# 数据目录
+data/
+*.xlsx
+*.json
+
+# 日志
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.bak
+
+# Jupyter
+.ipynb_checkpoints
