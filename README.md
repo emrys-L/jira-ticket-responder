@@ -1,6 +1,6 @@
-# Jira Ticket Responder v1.0.0
+# Jira Ticket Responder v1.1.0
 
-🤖 基于 LLM 的 Jira 工单自动回复建议生成工具
+🤖 基于 LLM 的 Jira 工单自动回复建议生成工具（支持 HTML 报告 + 智能过滤）
 
 ## ✨ 核心功能
 
@@ -8,8 +8,10 @@
 - ✅ **智能场景识别** - 自动判断停滞/承诺超期/需跟进等场景
 - ✅ **批量分析工具** - 支持小批量测试和全量分析
 - ✅ **Excel 导出** - 精美样式，Y/N 确认列，超链接直达工单
+- ✅ **HTML 报告** - jiraAss 风格，支持夜间模式、多维度过滤
 - ✅ **内部评论发表** - 一键发表内部说明（客户不可见）
 - ✅ **完整性验证** - 自动重试，确保建议完整
+- ✅ **智能过滤** - 自动过滤已关闭/已完成工单，只保留活跃工单
 
 ## 🚀 快速开始
 
@@ -26,22 +28,30 @@ cp config.example.py config.local.py
 # 编辑 config.local.py，填入 Jira API token
 ```
 
-### 3. 执行分析
+### 3. 更新全量数据（推荐）
 
 ```bash
-# 小批量测试（10 个工单）
-python3 scripts/batch_analyze_10.py
+# 使用 skill 自动更新（新增）
+python3 scripts/update_full_data.py
 
-# 全量分析
+# 或手动执行
+python3 scripts/cache_refresh.py --all
 python3 scripts/llm_analyzer.py
-
-# 生成 Excel
-python3 scripts/generate_excel_optimized.py
 ```
 
-### 4. 审查并发表
+### 4. 生成报告
 
-1. 打开 Excel，在'是否发表'列填写 Y/N
+```bash
+# Excel 报告
+python3 scripts/generate_excel_optimized.py
+
+# HTML 报告（jiraAss 风格，支持夜间模式/过滤）
+python3 scripts/generate_html_report_jiraass.py
+```
+
+### 5. 审查并发表
+
+1. 打开 Excel/HTML 报告，审查建议
 2. 使用发表脚本批量发表（或手动在 Jira 中发表）
 
 ## 📊 使用案例
@@ -75,15 +85,18 @@ python3 scripts/generate_excel_optimized.py
 
 ```
 jira-ticket-responder/
-├── scripts/                # 核心工具
-│   ├── llm_analyzer.py     # LLM 分析器
-│   ├── batch_analyze_10.py # 批量分析（10 个）
-│   ├── generate_excel.py   # Excel 导出（基础）
-│   └── generate_excel_optimized.py  # Excel 导出（优化）
+├── scripts/                    # 核心工具
+│   ├── llm_analyzer.py         # LLM 分析器
+│   ├── batch_analyze_10.py     # 批量分析（10 个）
+│   ├── cache_refresh.py        # 缓存刷新工具
+│   ├── update_full_data.py     # 全量数据更新（v1.1 新增）
+│   ├── generate_excel.py       # Excel 导出（基础）
+│   ├── generate_excel_optimized.py  # Excel 导出（优化）
+│   └── generate_html_report_jiraass.py  # HTML 报告（jiraAss 风格）
 ├── data/
-│   ├── raw_issues/         # 工单原始数据（缓存）
-│   └── reports/            # 生成的报告
-├── config.example.py       # 配置示例
+│   ├── raw_issues/             # 工单原始数据（缓存）
+│   └── reports/                # 生成的报告
+├── config.example.py           # 配置示例
 ├── README.md
 └── .gitignore
 ```
@@ -163,6 +176,26 @@ LLM_CONFIG = {
 > @Tony 此工单已停滞 29 天，注意到你于 04-07 提到会将修复纳入下次固件升级。请问目前固件发布进展如何？是否需跟进客户验证结果？请确认最新状态以便推进或关闭，谢谢。
 
 ## 📝 版本历史
+
+### v1.1.0 (2026-06-05) - 新增
+
+**核心功能**:
+- ✨ **HTML 报告生成**（jiraAss 风格）
+  - 🌙 夜间模式/白天模式切换
+  - 🔍 三维度过滤（组织/优先级/停滞天数）
+  - 💾 localStorage 持久化
+  - 📊 数据可视化图表
+- ✨ **智能过滤系统**
+  - 自动过滤已关闭/已完成/RDMS 已关闭工单
+  - 只保留活跃工单（WORK IN PROGRESS/已挂起/技服验证/升级待处理）
+- ✨ **全量数据更新流程**
+  - 一键刷新所有工单缓存
+  - 自动重新分析并生成报告
+
+**实战验证**:
+- ✅ 处理 193 个工单，过滤后保留 46 个活跃工单
+- ✅ 成功过滤 147 个已关闭工单（包括 35 个 RDMS 已关闭）
+- ✅ HTML 报告支持完整的夜间模式和过滤功能
 
 ### v1.0.0 (2026-05-07)
 
